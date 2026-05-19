@@ -12,10 +12,6 @@ elif [[ -f "${SCRIPT_DIR}/env.b200.example.sh" ]]; then
   source "${SCRIPT_DIR}/env.b200.example.sh"
 fi
 
-if [[ -z "${SGLANG_DIR:-}" ]]; then
-  SGLANG_DIR="$(cd "${SCRIPT_DIR}/../sglang" && pwd)"
-fi
-
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 MODEL_PATH="${MODEL_PATH:-Qwen/Qwen3-32B}"
 TOKENIZER_PATH="${TOKENIZER_PATH:-$MODEL_PATH}"
@@ -40,7 +36,13 @@ BENCH_EXTRA_ARGS="${BENCH_EXTRA_ARGS:-}"
 timestamp="$(date +%Y%m%d_%H%M%S)"
 output_file="${BENCH_OUTPUT_FILE:-${LOG_DIR}/bench_pd_${timestamp}.jsonl}"
 
-export PYTHONPATH="${SGLANG_DIR}/python:${SGLANG_DIR}/sgl-model-gateway/bindings/python/src:${PYTHONPATH:-}"
+if [[ -n "${SGLANG_DIR:-}" ]]; then
+  if [[ ! -d "$SGLANG_DIR" ]]; then
+    echo "SGLANG_DIR does not exist: ${SGLANG_DIR}"
+    exit 1
+  fi
+  export PYTHONPATH="${SGLANG_DIR}/python:${SGLANG_DIR}/sgl-model-gateway/bindings/python/src:${PYTHONPATH:-}"
+fi
 
 args=(
   -m sglang.bench_serving

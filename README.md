@@ -6,10 +6,8 @@ performance benchmarking.
 
 ## Repository Layout
 
-- `pd_disagg/`: SGLang prefill/decode disaggregation launch, setup, smoke test,
-  and benchmark scripts for Qwen3-32B on B200.
-- `sglang/`: upstream SGLang source tracked as a Git submodule and pinned to the
-  commit used by the local training scripts.
+- `pd_disagg/`: SGLang prefill/decode disaggregation launch, smoke test, and
+  benchmark scripts for Qwen3-32B on B200.
 
 ## Current Focus
 
@@ -21,10 +19,9 @@ performance benchmarking.
 ## Getting Started
 
 ```bash
-git submodule update --init --recursive
 cd pd_disagg
 cp env.b200.example.sh env.b200.local.sh
 ```
 
-Edit `env.b200.local.sh` for the target machine before running setup or launch
-scripts.
+Install `sglang`, `sglang-router`, and `mooncake-transfer-engine` in your Python
+environment before launching. Edit `env.b200.local.sh` for the target machine.

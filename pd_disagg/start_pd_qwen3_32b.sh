@@ -12,10 +12,6 @@ elif [[ -f "${SCRIPT_DIR}/env.b200.example.sh" ]]; then
   source "${SCRIPT_DIR}/env.b200.example.sh"
 fi
 
-if [[ -z "${SGLANG_DIR:-}" ]]; then
-  SGLANG_DIR="$(cd "${SCRIPT_DIR}/../sglang" && pwd)"
-fi
-
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 MODEL_PATH="${MODEL_PATH:-Qwen/Qwen3-32B}"
 TOKENIZER_PATH="${TOKENIZER_PATH:-$MODEL_PATH}"
@@ -82,7 +78,13 @@ READY_TIMEOUT_SECS="${READY_TIMEOUT_SECS:-1800}"
 mkdir -p "$LOG_DIR" "$(dirname "$PID_FILE")"
 : > "$PID_FILE"
 
-export PYTHONPATH="${SGLANG_DIR}/python:${SGLANG_DIR}/sgl-model-gateway/bindings/python/src:${PYTHONPATH:-}"
+if [[ -n "${SGLANG_DIR:-}" ]]; then
+  if [[ ! -d "$SGLANG_DIR" ]]; then
+    echo "SGLANG_DIR does not exist: ${SGLANG_DIR}"
+    exit 1
+  fi
+  export PYTHONPATH="${SGLANG_DIR}/python:${SGLANG_DIR}/sgl-model-gateway/bindings/python/src:${PYTHONPATH:-}"
+fi
 export SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT="${SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT:-600}"
 export SGLANG_DISAGGREGATION_WAITING_TIMEOUT="${SGLANG_DISAGGREGATION_WAITING_TIMEOUT:-600}"
 
@@ -297,7 +299,9 @@ launch_router() {
   echo "$pid router ${ROUTER_ADDR}:${ROUTER_PORT} ${log_file}" >> "$PID_FILE"
 }
 
-cd "$SGLANG_DIR"
+if [[ -n "${SGLANG_DIR:-}" ]]; then
+  cd "$SGLANG_DIR"
+fi
 
 PREFILL_URL_ARGS=()
 DECODE_URL_ARGS=()

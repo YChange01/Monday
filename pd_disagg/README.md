@@ -3,14 +3,9 @@
 This directory contains launch scripts for a first B200 bring-up of SGLang
 prefill/decode disaggregation with `Qwen/Qwen3-32B`.
 
-The SGLang source is cloned at `../sglang`. The local checkout used when these
-scripts were created was commit `87c3c96`.
-
 ## Files
 
 - `env.b200.example.sh`: editable configuration template.
-- `setup_b200_env.sh`: creates a Python virtualenv and installs SGLang, router,
-  and transfer dependencies.
 - `start_pd_qwen3_32b.sh`: launches prefill workers, decode workers, and the
   router.
 - `smoke_test.sh`: sends one request through the router.
@@ -23,9 +18,7 @@ scripts were created was commit `87c3c96`.
 cd pd_disagg
 cp env.b200.example.sh env.b200.local.sh
 # Edit env.b200.local.sh for GPU groups, IB/NVLink, ports, and model cache.
-
-./setup_b200_env.sh
-source .venv/bin/activate
+# Make sure sglang, sglang-router, and mooncake-transfer-engine are installed.
 
 ./start_pd_qwen3_32b.sh
 ./smoke_test.sh

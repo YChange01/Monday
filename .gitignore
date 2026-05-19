@@ -18,6 +18,9 @@ __pycache__/
 .venv/
 venv/
 
+# Local source checkouts
+sglang/
+
 # Runtime output
 *.log
 *.pid
