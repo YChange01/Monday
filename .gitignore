@@ -1,0 +1,33 @@
+.DS_Store
+**/.DS_Store
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.local.sh
+pd_disagg/env.b200.local.sh
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Runtime output
+*.log
+*.pid
+logs/
+tmp/
+
+# Large local artifacts
+data/
+datasets/
+models/
+checkpoints/
+hf_cache/
+.cache/
