@@ -23,6 +23,9 @@ cd pd_disagg
 ./stop_pd.sh
 ```
 
+`start_pd.sh` returns only after the router health check and one minimal
+end-to-end `/generate` request both succeed.
+
 Default topology:
 
 ```bash

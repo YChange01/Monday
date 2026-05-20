@@ -10,14 +10,33 @@ SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-qwen3-8b}"
 SMOKE_MODE="${SMOKE_MODE:-native}"
 BASE_URL="${BASE_URL:-http://${ROUTER_ADDR}:${ROUTER_PORT}}"
 
+send_json() {
+  local url="$1"
+  local body="$2"
+  local response_file status
+  response_file="$(mktemp)"
+
+  status="$(curl -sS -o "$response_file" -w "%{http_code}" "$url" \
+    -H "Content-Type: application/json" \
+    -d "$body" || true)"
+
+  if [[ "$status" != 2* ]]; then
+    echo "Request failed: HTTP ${status}"
+    cat "$response_file"
+    rm -f "$response_file"
+    exit 1
+  fi
+
+  "$PYTHON_BIN" -m json.tool < "$response_file"
+  rm -f "$response_file"
+}
+
 echo "Health check: ${BASE_URL}/health"
 curl -fsS "${BASE_URL}/health" >/dev/null
 
 if [[ "$SMOKE_MODE" == "chat" ]]; then
   echo "Sending OpenAI-compatible chat smoke request..."
-  curl -fsS "${BASE_URL}/v1/chat/completions" \
-    -H "Content-Type: application/json" \
-    -d @- <<JSON | "$PYTHON_BIN" -m json.tool
+  send_json "${BASE_URL}/v1/chat/completions" "$(cat <<JSON
 {
   "model": "${SERVED_MODEL_NAME}",
   "messages": [
@@ -28,11 +47,10 @@ if [[ "$SMOKE_MODE" == "chat" ]]; then
   "stream": false
 }
 JSON
+)"
 else
   echo "Sending native /generate smoke request..."
-  curl -fsS "${BASE_URL}/generate" \
-    -H "Content-Type: application/json" \
-    -d @- <<JSON | "$PYTHON_BIN" -m json.tool
+  send_json "${BASE_URL}/generate" "$(cat <<JSON
 {
   "text": "Give one sentence explaining prefill/decode disaggregation.",
   "sampling_params": {
@@ -41,4 +59,5 @@ else
   }
 }
 JSON
+)"
 fi

@@ -94,6 +94,24 @@ wait_for_health() {
   echo "Router is healthy."
 }
 
+wait_for_generate() {
+  local url="$1"
+  local deadline=$((SECONDS + READY_TIMEOUT_SECS))
+
+  echo "Waiting for PD generation readiness: ${url}/generate"
+  until curl -fsS "${url}/generate" \
+    -H "Content-Type: application/json" \
+    -d '{"text":"ping","sampling_params":{"temperature":0,"max_new_tokens":1}}' \
+    >/dev/null 2>&1; do
+    if (( SECONDS >= deadline )); then
+      echo "Timed out waiting for PD generation readiness. Check logs in ${LOG_DIR}."
+      return 1
+    fi
+    sleep 10
+  done
+  echo "PD generation is ready."
+}
+
 launch_prefill_workers() {
   IFS=';' read -r -a groups <<< "$PREFILL_GROUPS"
   for idx in "${!groups[@]}"; do
@@ -189,3 +207,4 @@ echo "Logs: ${LOG_DIR}"
 echo "Router base URL: http://${ROUTER_ADDR}:${ROUTER_PORT}"
 
 wait_for_health "http://${ROUTER_ADDR}:${ROUTER_PORT}"
+wait_for_generate "http://${ROUTER_ADDR}:${ROUTER_PORT}"
