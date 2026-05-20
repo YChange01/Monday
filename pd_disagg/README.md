@@ -115,6 +115,10 @@ Watch TTFT, TPOT, transfer errors, GPU memory headroom, and router retries. If
 decode TPOT spikes, add decode capacity or lower benchmark concurrency. If TTFT
 is too high and decode is idle, add prefill capacity.
 
+`bench_pd.sh` defaults to `BENCH_DATASET_NAME=random-ids` so it does not need to
+download a ShareGPT file from Hugging Face. Use `BENCH_DATASET_NAME=random` only
+when the dataset is already cached or the host has working external access.
+
 ## References
 
 - SGLang PD docs: https://docs.sglang.io/distributed/prefill-decode-disaggregation
