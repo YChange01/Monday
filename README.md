@@ -7,7 +7,7 @@ performance benchmarking.
 ## Repository Layout
 
 - `pd_disagg/`: SGLang prefill/decode disaggregation launch, smoke test, and
-  benchmark scripts for Qwen3-32B on B200.
+  benchmark scripts for Qwen3-30B-A3B on B200.
 
 ## Current Focus
 

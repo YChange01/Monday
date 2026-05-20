@@ -4,7 +4,7 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 PYTHON_BIN="${PYTHON_BIN:-python3}"
-MODEL_PATH="${MODEL_PATH:-Qwen/Qwen3-32B}"
+MODEL_PATH="${MODEL_PATH:-/mnt/nvme3n1/g00872988/models/Qwen3-30B-A3B}"
 TOKENIZER_PATH="${TOKENIZER_PATH:-$MODEL_PATH}"
 ROUTER_ADDR="${ROUTER_ADDR:-127.0.0.1}"
 ROUTER_PORT="${ROUTER_PORT:-8000}"
