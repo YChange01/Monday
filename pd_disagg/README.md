@@ -36,6 +36,15 @@ two B200 GPUs for the initial real PD test. A single GPU can be useful for synta
 experiments only, but it is not a representative PD setup because both roles
 duplicate model weights and compete for KV memory.
 
+Default ports:
+
+```bash
+ROUTER_PORT="18080"
+PREFILL_PORT_START="18100"
+DECODE_PORT_START="18200"
+BOOTSTRAP_PORT_START="18300"
+```
+
 ## Scaling Examples
 
 Two TP=2 workers:
