@@ -1,7 +1,7 @@
-# SGLang PD Disaggregation for Qwen3-30B-A3B on B200
+# SGLang PD Disaggregation for Qwen3-8B on B200
 
 This directory contains launch scripts for a first B200 bring-up of SGLang
-prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-30B-A3B`.
+prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-8B`.
 
 ## Files
 
@@ -87,4 +87,4 @@ is too high and decode is idle, add prefill capacity.
 - SGLang PD docs: https://docs.sglang.io/distributed/prefill-decode-disaggregation
 - SGLang gateway docs: https://docs.sglang.io/advanced_features/sgl_model_gateway.html
 - SGLang bench serving docs: https://docs.sglang.io/developer_guide/bench_serving.html
-- Qwen3-30B-A3B model card: https://huggingface.co/Qwen/Qwen3-30B-A3B
+- Qwen3-8B model card: https://huggingface.co/Qwen/Qwen3-8B

@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
-PID_FILE="${PID_FILE:-${SCRIPT_DIR}/run/pd_qwen3_30b.pid}"
+PID_FILE="${PID_FILE:-${SCRIPT_DIR}/run/pd_qwen3_8b.pid}"
 
 if [[ ! -f "$PID_FILE" ]]; then
   echo "PID file not found: ${PID_FILE}"
