@@ -26,6 +26,10 @@ cd pd_disagg
 `start_pd.sh` returns only after the router health check and one minimal
 end-to-end `/generate` request both succeed.
 
+If the shell has HTTP proxy variables set, the launcher automatically adds
+localhost addresses to `NO_PROXY`/`no_proxy` so prefill, decode, and bootstrap
+traffic stays on the machine.
+
 Default topology:
 
 ```bash
