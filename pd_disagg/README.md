@@ -16,7 +16,6 @@ prefill/decode disaggregation with `Qwen/Qwen3-32B`.
 ```bash
 cd pd_disagg
 # Make sure sglang, sglang-router, and mooncake-transfer-engine are installed.
-# Optional: create env.b200.local.sh with machine-specific overrides.
 
 ./start_pd.sh
 ./smoke_test.sh

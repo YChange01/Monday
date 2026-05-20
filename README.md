@@ -25,5 +25,5 @@ cd pd_disagg
 
 Install `sglang`, `sglang-router`, and `mooncake-transfer-engine` in your Python
 environment before launching. Runtime defaults live in
-`start_pd.sh`; create `env.b200.local.sh` only when the target machine
-needs overrides such as GPU groups, ports, model path, or Python path.
+`start_pd.sh`; override machine-specific settings with environment variables
+when needed.

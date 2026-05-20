@@ -2,12 +2,6 @@
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="${1:-${SCRIPT_DIR}/env.b200.local.sh}"
-
-if [[ -f "$ENV_FILE" ]]; then
-  # shellcheck disable=SC1090
-  source "$ENV_FILE"
-fi
 
 PID_FILE="${PID_FILE:-${SCRIPT_DIR}/run/pd_qwen3_32b.pid}"
 

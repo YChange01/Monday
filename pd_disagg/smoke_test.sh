@@ -2,12 +2,6 @@
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="${1:-${SCRIPT_DIR}/env.b200.local.sh}"
-
-if [[ -f "$ENV_FILE" ]]; then
-  # shellcheck disable=SC1090
-  source "$ENV_FILE"
-fi
 
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 ROUTER_ADDR="${ROUTER_ADDR:-127.0.0.1}"
