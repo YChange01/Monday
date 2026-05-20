@@ -36,6 +36,18 @@ LOG_DIR="${LOG_DIR:-${SCRIPT_DIR}/logs}"
 PID_FILE="${PID_FILE:-${SCRIPT_DIR}/run/pd_qwen3_8b.pid}"
 
 mkdir -p "$LOG_DIR" "$(dirname "$PID_FILE")"
+
+if [[ -s "$PID_FILE" ]]; then
+  while read -r pid role endpoint log_file; do
+    [[ -z "${pid:-}" ]] && continue
+    if kill -0 "$pid" >/dev/null 2>&1; then
+      echo "Existing ${role} process is still running: pid=${pid}, endpoint=${endpoint}"
+      echo "Run ./stop_pd.sh before starting again."
+      exit 1
+    fi
+  done < "$PID_FILE"
+fi
+
 : > "$PID_FILE"
 
 export SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT="${SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT:-600}"
