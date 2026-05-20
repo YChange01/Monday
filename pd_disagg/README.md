@@ -67,6 +67,8 @@ The launcher defaults to Mooncake:
 
 ```bash
 export TRANSFER_BACKEND=mooncake
+export SGLANG_MOONCAKE_CUSTOM_MEM_POOL=INTRA_NODE_NVLINK
+export MC_INTRANODE_NVLINK=true
 ```
 
 ## Initial Tuning Guidance
