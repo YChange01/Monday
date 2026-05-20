@@ -8,7 +8,13 @@ ROUTER_ADDR="${ROUTER_ADDR:-127.0.0.1}"
 ROUTER_PORT="${ROUTER_PORT:-18080}"
 SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-qwen3-8b}"
 SMOKE_MODE="${SMOKE_MODE:-native}"
+SMOKE_TEXT="${SMOKE_TEXT:-ping}"
+SMOKE_MAX_NEW_TOKENS="${SMOKE_MAX_NEW_TOKENS:-8}"
 BASE_URL="${BASE_URL:-http://${ROUTER_ADDR}:${ROUTER_PORT}}"
+
+LOCAL_NO_PROXY="localhost,127.0.0.1,::1,0.0.0.0,${ROUTER_ADDR}"
+export NO_PROXY="${NO_PROXY:+${NO_PROXY},}${LOCAL_NO_PROXY}"
+export no_proxy="${no_proxy:+${no_proxy},}${LOCAL_NO_PROXY}"
 
 send_json() {
   local url="$1"
@@ -40,10 +46,10 @@ if [[ "$SMOKE_MODE" == "chat" ]]; then
 {
   "model": "${SERVED_MODEL_NAME}",
   "messages": [
-    {"role": "user", "content": "Give one sentence explaining prefill/decode disaggregation."}
+    {"role": "user", "content": "${SMOKE_TEXT}"}
   ],
   "temperature": 0,
-  "max_tokens": 64,
+  "max_tokens": ${SMOKE_MAX_NEW_TOKENS},
   "stream": false
 }
 JSON
@@ -52,10 +58,10 @@ else
   echo "Sending native /generate smoke request..."
   send_json "${BASE_URL}/generate" "$(cat <<JSON
 {
-  "text": "Give one sentence explaining prefill/decode disaggregation.",
+  "text": "${SMOKE_TEXT}",
   "sampling_params": {
     "temperature": 0,
-    "max_new_tokens": 64
+    "max_new_tokens": ${SMOKE_MAX_NEW_TOKENS}
   }
 }
 JSON
