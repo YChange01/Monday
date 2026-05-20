@@ -15,7 +15,7 @@ prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-8B`.
 
 ```bash
 cd pd_disagg
-# Make sure sglang, sglang-router, and mooncake-transfer-engine are installed.
+# Make sure sglang, sglang-router, and nixl are installed in the active env.
 
 ./start_pd.sh
 ./smoke_test.sh
@@ -66,12 +66,25 @@ export DECODE_GROUPS="2;3"
 
 ## Transfer Notes
 
-The launcher defaults to Mooncake:
+The launcher defaults to NIXL for single-node B200 bring-up:
+
+```bash
+export TRANSFER_BACKEND=nixl
+export SGLANG_DISAGGREGATION_NIXL_BACKEND=UCX
+```
+
+If `nixl` is not installed, install it in the same Python environment used by
+`PYTHON_BIN`, for example:
+
+```bash
+pip install nixl
+```
+
+Mooncake remains available as a fallback, but it requires the RDMA/NVLink
+transfer path to be healthy on the host:
 
 ```bash
 export TRANSFER_BACKEND=mooncake
-export SGLANG_MOONCAKE_CUSTOM_MEM_POOL=INTRA_NODE_NVLINK
-export MC_INTRANODE_NVLINK=true
 ```
 
 ## Initial Tuning Guidance

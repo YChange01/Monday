@@ -21,7 +21,7 @@ PREFILL_PORT_START="${PREFILL_PORT_START:-18100}"
 DECODE_PORT_START="${DECODE_PORT_START:-18200}"
 BOOTSTRAP_PORT_START="${BOOTSTRAP_PORT_START:-18300}"
 
-TRANSFER_BACKEND="${TRANSFER_BACKEND:-mooncake}"
+TRANSFER_BACKEND="${TRANSFER_BACKEND:-nixl}"
 DTYPE="${DTYPE:-bfloat16}"
 CONTEXT_LENGTH="${CONTEXT_LENGTH:-32768}"
 PREFILL_MEM_FRACTION_STATIC="${PREFILL_MEM_FRACTION_STATIC:-0.78}"
@@ -52,8 +52,31 @@ fi
 
 export SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT="${SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT:-600}"
 export SGLANG_DISAGGREGATION_WAITING_TIMEOUT="${SGLANG_DISAGGREGATION_WAITING_TIMEOUT:-600}"
-export SGLANG_MOONCAKE_CUSTOM_MEM_POOL="${SGLANG_MOONCAKE_CUSTOM_MEM_POOL:-INTRA_NODE_NVLINK}"
-export MC_INTRANODE_NVLINK="${MC_INTRANODE_NVLINK:-true}"
+
+configure_transfer_backend() {
+  case "$TRANSFER_BACKEND" in
+    nixl)
+      export SGLANG_DISAGGREGATION_NIXL_BACKEND="${SGLANG_DISAGGREGATION_NIXL_BACKEND:-UCX}"
+      if ! "$PYTHON_BIN" -c 'from nixl._api import nixl_agent' >/dev/null 2>&1; then
+        echo "TRANSFER_BACKEND=nixl requires the nixl Python package in ${PYTHON_BIN}."
+        echo "Install it in the active environment, or run with TRANSFER_BACKEND=mooncake after fixing Mooncake/RDMA."
+        exit 1
+      fi
+      ;;
+    mooncake)
+      export SGLANG_MOONCAKE_CUSTOM_MEM_POOL="${SGLANG_MOONCAKE_CUSTOM_MEM_POOL:-INTRA_NODE_NVLINK}"
+      export MC_INTRANODE_NVLINK="${MC_INTRANODE_NVLINK:-true}"
+      ;;
+    ascend|fake|mori)
+      ;;
+    *)
+      echo "Unsupported TRANSFER_BACKEND=${TRANSFER_BACKEND}. Use nixl, mooncake, ascend, fake, or mori."
+      exit 1
+      ;;
+  esac
+}
+
+configure_transfer_backend
 
 count_gpus() {
   local group="${1// /}"
@@ -205,6 +228,7 @@ launch_router
 echo "PID file: ${PID_FILE}"
 echo "Logs: ${LOG_DIR}"
 echo "Router base URL: http://${ROUTER_ADDR}:${ROUTER_PORT}"
+echo "Transfer backend: ${TRANSFER_BACKEND}"
 
 wait_for_health "http://${ROUTER_ADDR}:${ROUTER_PORT}"
 wait_for_generate "http://${ROUTER_ADDR}:${ROUTER_PORT}"
