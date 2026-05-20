@@ -5,9 +5,8 @@ prefill/decode disaggregation with `Qwen/Qwen3-32B`.
 
 ## Files
 
-- `env.b200.example.sh`: editable configuration template.
-- `start_pd_qwen3_32b.sh`: launches prefill workers, decode workers, and the
-  router.
+- `start_pd.sh`: launches prefill workers, decode workers, and the router.
+  Runtime defaults are defined here.
 - `smoke_test.sh`: sends one request through the router.
 - `bench_pd.sh`: runs `python -m sglang.bench_serving` against the router.
 - `stop_pd.sh`: stops processes recorded in the PID file.
@@ -16,11 +15,10 @@ prefill/decode disaggregation with `Qwen/Qwen3-32B`.
 
 ```bash
 cd pd_disagg
-cp env.b200.example.sh env.b200.local.sh
-# Edit env.b200.local.sh for GPU groups, IB/NVLink, ports, and model cache.
 # Make sure sglang, sglang-router, and mooncake-transfer-engine are installed.
+# Optional: create env.b200.local.sh with machine-specific overrides.
 
-./start_pd_qwen3_32b.sh
+./start_pd.sh
 ./smoke_test.sh
 ./bench_pd.sh
 ./stop_pd.sh
@@ -31,14 +29,13 @@ Default topology:
 ```bash
 PREFILL_GROUPS="0"
 DECODE_GROUPS="1"
-PREFILL_TP_SIZE="auto"
-DECODE_TP_SIZE="auto"
 ```
 
-That starts two full model replicas, one for prefill and one for decode. Use at
-least two B200 GPUs for the initial real PD test. A single GPU can be useful for
-syntax experiments only, but it is not a representative PD setup because both
-roles duplicate model weights and compete for KV memory.
+That starts two full model replicas, one for prefill and one for decode. Tensor
+parallel size is inferred from the number of GPUs in each group. Use at least
+two B200 GPUs for the initial real PD test. A single GPU can be useful for syntax
+experiments only, but it is not a representative PD setup because both roles
+duplicate model weights and compete for KV memory.
 
 ## Scaling Examples
 
@@ -56,37 +53,12 @@ export PREFILL_GROUPS="0;1"
 export DECODE_GROUPS="2;3"
 ```
 
-If prefill and decode use different TP layouts, enable the staging buffer:
-
-```bash
-export ENABLE_STAGING_BUFFER=1
-```
-
 ## Transfer Notes
 
-The default backend is Mooncake:
+The launcher defaults to Mooncake:
 
 ```bash
 export TRANSFER_BACKEND=mooncake
-```
-
-For single-node NVLink, try:
-
-```bash
-export MOONCAKE_MEM_POOL=INTRA_NODE_NVLINK
-```
-
-For NVL rack-scale deployments, use:
-
-```bash
-export MOONCAKE_MEM_POOL=NVLINK
-```
-
-For multi-node RDMA/RoCE, set the exact IB devices after verifying them with
-`ibstat` or `ibv_devinfo`:
-
-```bash
-export DISAGG_IB_DEVICE=mlx5_0
 ```
 
 ## Initial Tuning Guidance
@@ -108,8 +80,8 @@ BENCH_RANDOM_INPUT_LEN=8192  BENCH_RANDOM_OUTPUT_LEN=1024 ./bench_pd.sh
 ```
 
 Watch TTFT, TPOT, transfer errors, GPU memory headroom, and router retries. If
-decode TPOT spikes, lower `DECODE_MAX_RUNNING_REQUESTS` first. If TTFT is too
-high and decode is idle, add prefill capacity or tune chunked prefill.
+decode TPOT spikes, add decode capacity or lower benchmark concurrency. If TTFT
+is too high and decode is idle, add prefill capacity.
 
 ## References
 

@@ -20,8 +20,10 @@ performance benchmarking.
 
 ```bash
 cd pd_disagg
-cp env.b200.example.sh env.b200.local.sh
+./start_pd.sh
 ```
 
 Install `sglang`, `sglang-router`, and `mooncake-transfer-engine` in your Python
-environment before launching. Edit `env.b200.local.sh` for the target machine.
+environment before launching. Runtime defaults live in
+`start_pd.sh`; create `env.b200.local.sh` only when the target machine
+needs overrides such as GPU groups, ports, model path, or Python path.

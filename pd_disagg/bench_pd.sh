@@ -7,9 +7,6 @@ ENV_FILE="${1:-${SCRIPT_DIR}/env.b200.local.sh}"
 if [[ -f "$ENV_FILE" ]]; then
   # shellcheck disable=SC1090
   source "$ENV_FILE"
-elif [[ -f "${SCRIPT_DIR}/env.b200.example.sh" ]]; then
-  # shellcheck disable=SC1091
-  source "${SCRIPT_DIR}/env.b200.example.sh"
 fi
 
 PYTHON_BIN="${PYTHON_BIN:-python3}"
