@@ -10,6 +10,7 @@ prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-32B`.
 - `smoke_test.sh`: sends one request through the router.
 - `bench_pd.sh`: runs `python -m sglang.bench_serving` against the router.
 - `sweep_bench.sh`: runs a request-rate sweep against the current router.
+- `profile_pd.sh`: runs prefill/decode profiling and converts traces to tables.
 - `trace_to_table.py`: converts SGLang profiler traces into CSV/XLSX tables.
 - `stop_pd.sh`: stops processes recorded in the PID file.
 
@@ -134,6 +135,33 @@ The sweep writes per-run logs plus a tab-separated summary under
 sweep, stop it, start the next topology, and run the sweep again.
 
 ## Profiling Trace Tables
+
+To capture a profiling run and convert the trace into tables:
+
+```bash
+# Prefill only, one worker by default.
+./profile_pd.sh
+
+# Decode only.
+PROFILE_TARGET=decode ./profile_pd.sh
+
+# Both sides, profiled as separate benchmark runs.
+PROFILE_TARGET=both ./profile_pd.sh
+```
+
+Useful overrides:
+
+```bash
+PROFILE_WORKLOAD="2048:256" \
+PROFILE_REQUEST_RATE=40 \
+PROFILE_STEPS=20 \
+PROFILE_PREFILL_URLS="http://127.0.0.1:18100 http://127.0.0.1:18101" \
+PROFILE_TARGET=prefill \
+./profile_pd.sh
+```
+
+The script writes traces, benchmark logs, JSONL metrics, and converted tables
+under `logs/profile_<timestamp>/`.
 
 Chrome tracing is useful for timelines, but the fastest way to inspect concrete
 operations is to convert the trace to tables:
