@@ -9,6 +9,7 @@ prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-8B`.
   Runtime defaults are defined here.
 - `smoke_test.sh`: sends one request through the router.
 - `bench_pd.sh`: runs `python -m sglang.bench_serving` against the router.
+- `sweep_bench.sh`: runs a request-rate sweep against the current router.
 - `stop_pd.sh`: stops processes recorded in the PID file.
 
 ## Quick Start on B200
@@ -118,6 +119,20 @@ is too high and decode is idle, add prefill capacity.
 `bench_pd.sh` defaults to `BENCH_DATASET_NAME=random-ids` so it does not need to
 download a ShareGPT file from Hugging Face. Use `BENCH_DATASET_NAME=random` only
 when the dataset is already cached or the host has working external access.
+
+For an automatic request-rate sweep against the current running topology:
+
+```bash
+SWEEP_REQUEST_RATES="10 20 40 80" \
+SWEEP_WORKLOADS="2048:256" \
+SWEEP_NUM_PROMPTS=500 \
+SWEEP_MAX_CONCURRENCY=128 \
+./sweep_bench.sh
+```
+
+The sweep writes per-run logs plus a tab-separated summary under
+`logs/sweep_<timestamp>/`. To compare topologies, start one topology, run the
+sweep, stop it, start the next topology, and run the sweep again.
 
 ## References
 
