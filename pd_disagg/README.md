@@ -1,7 +1,7 @@
-# SGLang PD Disaggregation for Qwen3-8B on B200
+# SGLang PD Disaggregation for Qwen3-32B on B200
 
 This directory contains launch scripts for a first B200 bring-up of SGLang
-prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-8B`.
+prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-32B`.
 
 ## Files
 
@@ -36,15 +36,13 @@ traffic stays on the machine.
 Default topology:
 
 ```bash
-PREFILL_GROUPS="4"
-DECODE_GROUPS="5"
+PREFILL_GROUPS="0;1"
+DECODE_GROUPS="2;3"
 ```
 
-That starts two full model replicas, one for prefill and one for decode. Tensor
-parallel size is inferred from the number of GPUs in each group. Use at least
-two B200 GPUs for the initial real PD test. A single GPU can be useful for syntax
-experiments only, but it is not a representative PD setup because both roles
-duplicate model weights and compete for KV memory.
+That starts four full model replicas: two prefill workers and two decode
+workers, each on one B200. Tensor parallel size is inferred from the number of
+GPUs in each group.
 
 Default ports:
 
@@ -139,4 +137,4 @@ sweep, stop it, start the next topology, and run the sweep again.
 - SGLang PD docs: https://docs.sglang.io/distributed/prefill-decode-disaggregation
 - SGLang gateway docs: https://docs.sglang.io/advanced_features/sgl_model_gateway.html
 - SGLang bench serving docs: https://docs.sglang.io/developer_guide/bench_serving.html
-- Qwen3-8B model card: https://huggingface.co/Qwen/Qwen3-8B
+- Qwen3-32B model card: https://huggingface.co/Qwen/Qwen3-32B
