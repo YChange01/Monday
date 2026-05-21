@@ -78,20 +78,6 @@ bash sweep_bench.sh
 
 ## 4. 长上下文测试
 
-推荐直接跑封装脚本：
-
-```bash
-bash long_context_bench.sh
-```
-
-快速验证一轮：
-
-```bash
-LONG_CONTEXT_QUICK=1 bash long_context_bench.sh
-```
-
-等价的手动 sweep：
-
 ```bash
 SWEEP_REQUEST_RATES="2 5 10 20" \
 SWEEP_WORKLOADS="4096:256 8192:256 16384:256" \
