@@ -10,6 +10,7 @@ prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-32B`.
 - `smoke_test.sh`: sends one request through the router.
 - `bench_pd.sh`: runs `python -m sglang.bench_serving` against the router.
 - `sweep_bench.sh`: runs a request-rate sweep against the current router.
+- `long_context_bench.sh`: runs the long-context sweep from the test TODO.
 - `trace_to_table.py`: converts SGLang profiler traces into CSV/XLSX tables.
 - `stop_pd.sh`: stops processes recorded in the PID file.
 
@@ -132,6 +133,20 @@ SWEEP_MAX_CONCURRENCY=128 \
 The sweep writes per-run logs plus a tab-separated summary under
 `logs/sweep_<timestamp>/`. To compare topologies, start one topology, run the
 sweep, stop it, start the next topology, and run the sweep again.
+
+For the default long-context sweep:
+
+```bash
+./long_context_bench.sh
+```
+
+That runs `4096:256`, `8192:256`, and `16384:256` with request rates
+`2 5 10 20`, writes `summary.tsv`, and records `nvidia-smi dmon` to
+`gpu_dmon.log` when available. For a quick validation pass:
+
+```bash
+LONG_CONTEXT_QUICK=1 ./long_context_bench.sh
+```
 
 ## Profiling Trace Tables
 
