@@ -10,6 +10,7 @@ prefill/decode disaggregation with `/mnt/nvme3n1/g00872988/models/Qwen3-32B`.
 - `smoke_test.sh`: sends one request through the router.
 - `bench_pd.sh`: runs `python -m sglang.bench_serving` against the router.
 - `sweep_bench.sh`: runs a request-rate sweep against the current router.
+- `trace_to_table.py`: converts SGLang profiler traces into CSV/XLSX tables.
 - `stop_pd.sh`: stops processes recorded in the PID file.
 
 ## Quick Start on B200
@@ -131,6 +132,37 @@ SWEEP_MAX_CONCURRENCY=128 \
 The sweep writes per-run logs plus a tab-separated summary under
 `logs/sweep_<timestamp>/`. To compare topologies, start one topology, run the
 sweep, stop it, start the next topology, and run the sweep again.
+
+## Profiling Trace Tables
+
+Chrome tracing is useful for timelines, but the fastest way to inspect concrete
+operations is to convert the trace to tables:
+
+```bash
+python trace_to_table.py \
+  logs/profile_prefill_r40/<timestamp>/prefill_r40-*.trace.json.gz \
+  --out-dir logs/profile_prefill_r40_tables \
+  --xlsx
+```
+
+The script writes:
+
+- `*_summary_by_name.csv`: operations ranked by total duration.
+- `*_summary_by_stream.csv`: stream/thread totals and top operations.
+- `*_long_events.csv`: longest individual events.
+- `*_events.csv`: full event detail table.
+- `*_trace_summary.xlsx`: Excel workbook, if `pandas` and `openpyxl` exist.
+
+If the detail table is too large, filter short events:
+
+```bash
+python trace_to_table.py TRACE.trace.json.gz --min-dur-us 50 --xlsx
+```
+
+Start bottleneck analysis from `summary_by_name` and `summary_by_stream`.
+`gemm`, `matmul`, `attention`, or `trtllm` at the top usually means GPU compute
+is dominant. `memcpy`, `copy`, `transfer`, `nixl`, `ucx`, `wait`, or
+`synchronize` near the top points to data movement or synchronization.
 
 ## References
 
